@@ -1,0 +1,25 @@
+{
+  "keystore_path": "C:/Users/zft/Desktop/bundletool/junkovi.jks",
+  "key_alias": "junkoop",
+  "ks_pass": "junkocht",
+  "key_pass": "junkocht",
+  "Junko-app.aab": {
+    "keystore_path": "C:/Users/zft/Desktop/bundletool/junkovi.jks",
+    "key_alias": "junkoop",
+    "ks_pass": "junkocht",
+    "key_pass": "junkocht"
+  },
+  "last_file_key": "yslx.jks",
+  "junkovi.jks": {
+    "keystore_path": "C:/Users/zft/Desktop/bundletool/junkovi.jks",
+    "key_alias": "junkoop",
+    "ks_pass": "junkocht",
+    "key_pass": "junkocht"
+  },
+  "yslx.jks": {
+    "keystore_path": "C:/Users/zft/Desktop/bundletool/yslx.jks",
+    "key_alias": "ysl",
+    "ks_pass": "ysltalk",
+    "key_pass": "ysltalk"
+  }
+}
