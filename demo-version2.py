@@ -6,7 +6,11 @@ import json  # {{导入json模块处理配置文件 }}
 import threading  # {{导入线程模块 }}
 from tkinter import scrolledtext, ttk, filedialog
 
-#获取程序运行路径（兼容打包后环境）
+global bundletoolName
+bundletoolName = "bundletool-all-1.18.2.jar"
+
+
+# 获取程序运行路径（兼容打包后环境）
 def get_resource_path(relative_path):
     """获取资源文件的绝对路径（支持PyInstaller打包后环境）"""
     # if hasattr(sys, '_MEIPASS'):
@@ -14,6 +18,7 @@ def get_resource_path(relative_path):
     #     return os.path.join(sys._MEIPASS, relative_path)
     # 开发环境，直接使用相对路径
     return os.path.join(os.path.abspath('.'), relative_path)
+
 
 # {{打开输出文件夹函数 }}
 def open_output_folder():
@@ -67,7 +72,7 @@ def load_config():
     """加载保存的配置文件（config.json）"""
     config_path = get_resource_path('config.json')
     # 输出配置文件路径
-    output_text.insert( tk.END,f"配置文件：{str(config_path)}")
+    output_text.insert(tk.END, f"配置文件：{str(config_path)}")
     try:
         if os.path.exists(config_path):
             with open(config_path, 'r', encoding='utf-8') as f:
@@ -120,7 +125,6 @@ def select_keystore():
             key_pass_var.set('')
 
 
-
 # {{文件选择函数 }}
 def select_file():
     """打开文件选择对话框并更新文件路径"""
@@ -132,7 +136,7 @@ def select_file():
         file_path_var.set(file_path)  # 更新文件路径变量
 
 
-#执行系统指令的函数
+# 执行系统指令的函数
 def run_system_command(command):
     try:
         # 执行指令并捕获输出（stdout=标准输出，stderr=错误输出）
@@ -154,7 +158,7 @@ def run_system_command(command):
         return f"发生异常:\n{str(e)}", "red"
 
 
-#GUI界面中触发指令执行的函数
+# GUI界面中触发指令执行的函数
 def execute_command():
     # 获取选中的AAB文件路径
     aab_path = file_path_var.get()
@@ -206,7 +210,7 @@ def execute_command():
 
     # {{ 修改：构建带签名参数的bundletool命令 }}
     command = (
-        f"java -jar bundletool-all-1.18.1.jar build-apks "
+        f"java -jar {bundletoolName} build-apks "
         f"--bundle=\"{aab_path}\" "
         f"--output=\"{apk_output}\" "
         # f"--mode=universal "
@@ -233,7 +237,44 @@ def execute_command():
     # output_text.tag_config("color", foreground=color)
 
 
-#创建GUI界面
+# {{安装APK函数 }}
+def install_apk():
+    """安装APK文件到连接的设备"""
+    apk_path = file_path_var.get()
+    output_text.delete(1.0, tk.END)  # 清空现有输出
+
+    # 检查文件是否选择
+    if not apk_path:
+        output_text.insert(tk.END, "错误：请先选择APK文件", "red")
+        return
+
+    # 检查文件扩展名
+    if not apk_path.lower().endswith(".apks"):
+        output_text.insert(tk.END, "错误：请选择扩展名为.apks的文件", "red")
+        return
+
+    # 构建安装命令
+    command = f"java -jar {bundletoolName} install-apks --apks={apk_path}"
+
+    # 异步执行命令
+    output_text.insert(tk.END, f"正在执行安装命令...\n{command}\n\n", "blue")
+    run_btn.config(state="disabled")  # 禁用按钮防止重复提交
+    # 启动后台线程执行命令
+    threading.Thread(target=run_command_async, args=(command,), daemon=True).start()
+
+
+# {{选择APK文件函数 }}
+def select_apk_file():
+    """打开APK文件选择对话框"""
+    file_path = filedialog.askopenfilename(
+        title="选择APK文件",
+        filetypes=[("所有文件", "*.*"), ("aab", "*.aab"), ("APK集文件", "*.apks")]
+    )
+    if file_path:  # 如果用户选择了文件
+        file_path_var.set(file_path)  # 更新文件路径变量
+
+
+# 创建GUI界面
 def create_gui():
     global root, run_btn  # {{全局root和按钮引用 }}
     root = tk.Tk()
@@ -252,6 +293,9 @@ def create_gui():
     open_folder_btn = ttk.Button(btn_frame, text="打开输出文件夹", command=open_output_folder)
     open_folder_btn.pack(side="left", padx=5)
 
+    # {{新增：安装APK按钮 }}
+    install_btn = ttk.Button(btn_frame, text="安装APK", command=install_apk)
+    install_btn.pack(side="left", padx=5)
 
     # {{文件选择区域 }}
     # 创建文件选择框架
@@ -267,9 +311,8 @@ def create_gui():
     file_entry.pack(side="left", padx=5, pady=5, fill="x", expand=True)
 
     # 文件选择按钮
-    select_btn = ttk.Button(file_frame, text="浏览...", command=select_file)
+    select_btn = ttk.Button(file_frame, text="浏览...", command=select_apk_file)
     select_btn.pack(side="right", padx=5, pady=5)
-
 
     # {{签名配置区域 }}
     sign_frame = ttk.LabelFrame(root, text="签名配置（密钥库）")
@@ -281,8 +324,6 @@ def create_gui():
     key_alias_var = tk.StringVar()
     ks_pass_var = tk.StringVar()
     key_pass_var = tk.StringVar()
-
-
 
     # 密钥库路径选择
     ttk.Label(sign_frame, text="密钥库路径:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
