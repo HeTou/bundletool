@@ -8,7 +8,7 @@ from tkinter import scrolledtext, ttk, filedialog
 
 global bundletoolName
 bundletoolName = "bundletool-all-1.18.2.jar"
-
+device_spec = "device-spec.json"
 
 # 获取程序运行路径（兼容打包后环境）
 def get_resource_path(relative_path):
@@ -209,8 +209,13 @@ def execute_command():
     apk_output = os.path.splitext(aab_path)[0] + "_universal.apks"
 
     # {{ 修改：构建带签名参数的bundletool命令 }}
-    command = (
-        f"java -jar {bundletoolName} build-apks "
+    command = f"java -jar {bundletoolName} build-apks "
+
+    # 检查device_spec.json文件是否存在且内容不为空，只有满足条件时才添加--device-spec参数
+    if os.path.exists(device_spec) and os.path.getsize(device_spec) > 0:
+        command += f"--device-spec=\"{device_spec}\" "
+
+    command += (
         f"--bundle=\"{aab_path}\" "
         f"--output=\"{apk_output}\" "
         # f"--mode=universal "

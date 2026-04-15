@@ -9,7 +9,7 @@
     "ks_pass": "junkocht",
     "key_pass": "junkocht"
   },
-  "last_file_key": "raxila.jks",
+  "last_file_key": "waignalo.jks",
   "junkovi.jks": {
     "keystore_path": "C:/Users/zft/Desktop/bundletool/junkovi.jks",
     "key_alias": "junkoop",
@@ -27,5 +27,11 @@
     "key_alias": "raxila",
     "ks_pass": "raxila",
     "key_pass": "raxila"
+  },
+  "waignalo.jks": {
+    "keystore_path": "E:/androidproject/zaffalive2/app/waignalo.jks",
+    "key_alias": "waignalo",
+    "ks_pass": "waignalo",
+    "key_pass": "waignalo"
   }
 }
