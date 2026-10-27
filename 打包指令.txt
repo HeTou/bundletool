@@ -1,1 +1,16 @@
-pyinstaller demo.spec
+# 打包命令（macOS / Windows / Linux 通用）
+# 在当前目录执行：
+pyinstaller demo.spec --noconfirm
+
+# 产物位置：
+#   macOS:  dist/AAB转APK工具.app        （双击即可运行，无需安装 Python）
+#   Windows: dist/AAB转APK工具/AAB转APK工具.exe
+#   Linux:   dist/AAB转APK工具/AAB转APK工具
+
+# 说明：
+# 1. bundletool-all-1.18.2.jar 会被打包进 app 内部，无需额外携带
+# 2. config.json / device-spec.json 运行时会生成在 .app 同级目录（macOS），
+#    或可执行文件同级目录（Windows/Linux），方便用户查看与编辑
+# 3. 首次运行 macOS app 若被 Gatekeeper 拦截，可右键 -> 打开，或执行：
+#       xattr -dr com.apple.quarantine "dist/AAB转APK工具.app"
+# 4. 使用 AAB 转 APKS / 安装功能仍需本机安装 Java 与 adb

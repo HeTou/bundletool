@@ -1,20 +1,41 @@
 import json
 import os
 import subprocess
+import sys
 import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, ttk
 
 
-bundletoolName = "bundletool-all-1.18.2.jar"
-device_spec = "device-spec.json"
 selected_device_serial = ""
 selected_device_var = None
 device_info_cache = {}
 
 
 def get_resource_path(relative_path):
-    return os.path.join(os.path.abspath("."), relative_path)
+    """获取打包后只读资源文件的路径（如 bundletool JAR）。"""
+    if getattr(sys, "frozen", False):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
+
+
+def get_user_data_path(relative_path):
+    """获取用户可读写文件的路径（如 config.json / device-spec.json）。
+    打包后放在 .app 同级目录，方便用户查看与编辑；源码运行时放在脚本目录。"""
+    if getattr(sys, "frozen", False):
+        exe_dir = os.path.dirname(sys.executable)
+        if ".app" in exe_dir:
+            # .../AAB转APK工具.app/Contents/MacOS -> 上溯三级到 .app 所在目录
+            app_dir = exe_dir
+            for _ in range(3):
+                app_dir = os.path.dirname(app_dir)
+            return os.path.join(app_dir, relative_path)
+        return os.path.join(exe_dir, relative_path)
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
+
+
+bundletoolName = get_resource_path("bundletool-all-1.18.2.jar")
+device_spec = get_user_data_path("device-spec.json")
 
 
 def open_output_folder():
@@ -63,7 +84,7 @@ def update_output(result, color, success_message=None):
 
 
 def load_config():
-    config_path = get_resource_path("config.json")
+    config_path = get_user_data_path("config.json")
     try:
         if os.path.exists(config_path):
             with open(config_path, "r", encoding="utf-8") as f:
@@ -74,7 +95,7 @@ def load_config():
 
 
 def save_config(file_key, config_data):
-    config_path = get_resource_path("config.json")
+    config_path = get_user_data_path("config.json")
     try:
         existing_config = load_config()
         existing_config[file_key] = config_data
