@@ -9,9 +9,9 @@
     "ks_pass": "junkocht",
     "key_pass": "junkocht"
   },
-  "last_file_key": "waignalo.jks",
+  "last_file_key": "junkovi.jks",
   "junkovi.jks": {
-    "keystore_path": "C:/Users/zft/Desktop/bundletool/junkovi.jks",
+    "keystore_path": "/Users/zft/StudioProjects/funmi2/app/junkovi.jks",
     "key_alias": "junkoop",
     "ks_pass": "junkocht",
     "key_pass": "junkocht"

@@ -31,7 +31,15 @@ def open_output_folder():
         return
 
     try:
-        os.startfile(output_dir)
+        import platform
+
+        system = platform.system()
+        if system == "Windows":
+            os.startfile(output_dir)
+        elif system == "Darwin":
+            subprocess.Popen(["open", output_dir])
+        else:
+            subprocess.Popen(["xdg-open", output_dir])
         output_text.delete(1.0, tk.END)
         output_text.insert(tk.END, f"已打开输出文件夹：\n{output_dir}", "green")
     except Exception as e:
