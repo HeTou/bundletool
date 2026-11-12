@@ -1,0 +1,9 @@
+{
+  "junkovi.jks": {
+    "keystore_path": "/Users/zft/StudioProjects/funmi/app/junkovi.jks",
+    "key_alias": "junkoop",
+    "ks_pass": "junkocht",
+    "key_pass": "junkocht"
+  },
+  "last_file_key": "junkovi.jks"
+}
